@@ -11,7 +11,7 @@
     <ul>
     <table class="table">
       <thead>
-        <th>#</th>
+        <th>Type</th>
         <th>date</th>
         <th>name</th>
         <th>cost</th>
@@ -19,7 +19,7 @@
       <tbody>
         {% for t in tacts %}
           <tr>
-            <th scope="row">{{ loop.index0 }}</th>
+            <th scope="row">{{ t.type_}}</th>
             <td>{{ t.date }}</td>
             <td>{{ t.name }}</td>
             <td>{{ t.cost }}</td>

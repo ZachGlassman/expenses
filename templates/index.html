@@ -1,4 +1,16 @@
 {% extends 'base.html' %}
+{%block css %}
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.css"rel="stylesheet" type="text/css">
+{% endblock %}
 {% block content %}
 <h2>Welcome</h2>
+{{ div|safe }}
+{% endblock %}
+{% block javascript %}
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.js"></script>
+{{ script|safe }}
 {% endblock %}

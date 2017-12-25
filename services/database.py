@@ -25,13 +25,6 @@ class Database(object):
         return self.db.child(path).push(data, auth)
 
     def get(self, path, type_=None):
-        for i in range(10):
-            try:
-                return self._get(path, type_)
-            except ConnectionError:
-                time.sleep(.2)
-
-    def _get(self, path, type_=None):
         if type_ is None:
             items = self.db.child(path).get()
         else:

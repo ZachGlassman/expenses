@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import os
 import pyrebase
 from services import Database, Authorization
+from services.plotting import generate_type_plot
 from models import Transaction
 from datetime import datetime
 from functools import wraps
@@ -39,7 +40,12 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    div = ''
+    script = ''
+    if auth.is_logged_in():
+        tacts = db.get('transactions')
+        div, script = generate_type_plot([(i['type_'], i['cost']) for i in tacts])
+    return render_template('index.html', div=div, script=script)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -49,7 +55,7 @@ def login():
         auth.log_in(username, password)
         if auth.is_logged_in():
             session['username'] = username
-    return render_template('index.html')
+    return redirect('/')
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():

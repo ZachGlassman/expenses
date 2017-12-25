@@ -8,10 +8,30 @@
         </button>
       </form>
     </p>
-    <ul>
-    {% for t in types %}
-      <li>{{ t.name_ }}</li>
-    {% endfor %}
-    </ul>
+    <div id="accordian" role="tablist">
+      {% for t in types %}
+        <div class="card">
+          <div class="card-header" role="tab" id="label_{{ t.name_.replace(' ', '_') }}">
+            <h5 class="mb-0">
+              <a data-toggle="collapse" href="#{{ t.name_.replace(' ', '_') }}" aria-expanded="true" aria-controls="{{ t.name_.replace(' ', '_') }}">
+                {{ t.name_ }}
+              </a>
+            </h5>
+          </div>
+          <div id="{{ t.name_.replace(' ', '_') }}" class="collapse" role="tabpanel" aria-labelledby="label_{{ t.name_.replace(' ', '_') }}" data-parent="#accordion">
+            <div class="card-body">
+                <ul>
+                    {% for k,v  in t.items() %}
+                      {% if k != 'name_' %}
+                        <li>{{ k }} : {{ v }}</li>
+                      {% endif %}
+                    {% endfor %}
+                </ul>
+                
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}
