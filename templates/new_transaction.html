@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="col-sm-12">
+    <p>
+      <!-- https://stackoverflow.com/questions/29451208/set-default-value-for-select-html-element-in-jinja-template-->
+      <!-- https://geektnt.com/disable-button-onclick-to-prevent-double-submition.html -->
+      <form method="post" action="{{ url_for('new_transaction') }}">
+          <button class="btn btn-outline-success my-2 my-sm-0" formaction="{{ url_for('add_transaction') }}" type="submit" onclick="this.disables=true; this.form.submit();">Submit</button>
+          <input class="form-control mr-sm-2" name="transaction_name" type="text" value="{{ transaction_name }}" aria-label="transaction name">  
+          
+        {% for field in fields %}
+        <div class="form-row">
+          <div class="col">
+            <input class="form-control mr-sm-2" name="{{ field.fname }}" type="text" placeholder="{{ field.name }}" aria-label="{{ field.name }}" {% if not field.editable %}readonly{% endif %}>  
+          </div>
+          <div class="col">
+              <select class="form-control" name="{{ 'type_' + field.fname}}">  
+                <option {% if field.type == 'string' %} selected="selected" {% endif %}>string</option>
+                <option {% if field.type == 'number' %} selected="selected" {% endif %}>number</option>
+                <option {% if field.type == 'date' %} selected="selected" {% endif %}>date</option>
+              </select>
+            </div>
+        </div>
+        {% endfor %}
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add Field</button>            
+      </form>
+    </p>
+  </div>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+{% endblock %}
