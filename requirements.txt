@@ -1,6 +1,7 @@
 gunicorn
 requests
 pyrebase
+pip
 bokeh
 flask
 jinja2
