@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for
+from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify
 import os
 import pyrebase
 from services import Database, Authorization
@@ -129,6 +129,30 @@ def add_transaction():
         payload.add_property(field.name, field.type)
     db.put('transaction_types', payload.to_json(), auth.get_auth())
     return redirect('/types')
+
+def _validate(d):
+    """validate that every value is non default"""
+    return True
+
+@app.route('/add', methods=['GET', 'POST'])
+@login_required
+def add():
+    """add some sort of specific transactions"""
+    tacts = db.get('transaction_types')
+    if request.method == 'POST':
+        if _validate(request.form):
+            db.put('transactions', request.form, auth.get_auth())
+        else:
+            return jsonify({})
+    else:
+        return render_template('add.html', tacts=tacts)
+
+@app.route('/transactions')
+@login_required
+def transactions():
+    tacts = db.get('transactions')
+    return render_template('transactions.html', tacts=tacts)
+
      
 if __name__ == '__main__':
     app.run(port=33507)
