@@ -139,13 +139,24 @@ def _validate(d):
 def add():
     """add some sort of specific transactions"""
     tacts = db.get('transaction_types')
+    select = tacts[0]
     if request.method == 'POST':
-        if _validate(request.form):
-            db.put('transactions', request.form, auth.get_auth())
-        else:
-            return jsonify({})
+        select = [t for t in tacts if t['name_'] == request.form['select']][0]
+    return render_template('add.html', 
+                           tacts=[t['name_'] for t in tacts], 
+                           selected=select)
+
+@app.route('/add_final', methods=['POST'])
+@login_required
+def add_final():
+    if _validate(request.form):
+        payload = {k:v for k,v in request.form.items() if k != 'select'}
+        flash(payload)
+        payload['type_'] = request.form['select']
+        db.put('transactions', payload, auth.get_auth())
+        return redirect('/transactions')
     else:
-        return render_template('add.html', tacts=tacts)
+        return jsonify({})
 
 @app.route('/transactions')
 @login_required

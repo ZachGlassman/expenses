@@ -15,7 +15,20 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Expenses</a>
+      <a class="navbar-brand" href="/index">Expenses</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/types">Types</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/transactions">Transactions</a>
+            </li>
+          </ul>
+        </div>
       {% if not is_logged_in %}
         <form class="form-inline my-2 my-lg-0" method="post" action="{{ url_for('login') }}">
           <input class="form-control mr-sm-2" name="username" type="text" placeholder="Email" aria-label="Email">
@@ -48,5 +61,6 @@
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/js/bootstrap-material-design.js" integrity="sha384-3xciOSDAlaXneEmyOo0ME/2grfpqzhhTcM4cE32Ce9+8DW/04AGoTACzQpphYGYe" crossorigin="anonymous"></script>
     <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+    {% block javascript %}{% endblock %}    
   </body>
 </html>

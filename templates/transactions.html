@@ -9,9 +9,24 @@
       </form>
     </p>
     <ul>
-    {% for t in tacts %}
-      <li>{{ t.name }}, {{ t.cost }}, {{ t.date }}</li>
-    {% endfor %}
+    <table class="table">
+      <thead>
+        <th>#</th>
+        <th>date</th>
+        <th>name</th>
+        <th>cost</th>
+      </thead>
+      <tbody>
+        {% for t in tacts %}
+          <tr>
+            <th scope="row">{{ loop.index0 }}</th>
+            <td>{{ t.date }}</td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.cost }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     </ul>
   </div>
 {% endblock %}

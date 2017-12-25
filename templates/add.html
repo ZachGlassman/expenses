@@ -2,16 +2,41 @@
 {% block content %}
   <div class="col-sm-12">
     <p>
-      <form action="/add">
-        <select class="form-control">
+      <form action="/add_final  " method='post'>
+        <select name="select" class="form-control">
           {% for t in tacts %}
-            <option>{{ t.name_ }}</option>
+            <option {% if t == selected.name_ %} selected='selected'{% endif %}>{{ t }}</option>
           {% endfor %}
         </select>
+        {% for k,v in selected.items() %}
+          {% if k != 'name_' %}
+            <div class="form-group">
+              <label for="{{ k }}">{{ k }}</label>
+              {% if v == 'string' %}
+                <input type="text" class="form-control" id="{{ k }}" name="{{ k }}" placeholder="Enter {{ k }}">
+              {% elif v == 'number' %}
+                <input type="number" step="any" class="form-control" id="{{ k }}" name="{{ k }}" placeholder="Enter {{ k }}">
+              {% else %}
+               <input type="date" class="form-control" id="{{ k }}" name="{{ k }}" placeholder="Enter {{ k }}">
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
         <button class="btn btn-primary" type="submit">
           Add
         </button>
       </form>
     </p>
   </div>
+{% endblock %}
+{% block javascript %}
+<script>
+    //http://www.encodedna.com/jquery/jquery-change-method.htm
+    //https://stackoverflow.com/questions/16966383/jquery-change-url-of-form-submit
+    $(function(){
+        $('select').change(function(){
+            $('form').attr('action', '/add').submit();
+        })
+    })
+</script>
 {% endblock %}
