@@ -1,3 +1,7 @@
 gunicorn
 requests
 pyrebase
+bokeh
+flask
+jinja2
+simplejson
