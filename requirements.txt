@@ -6,3 +6,4 @@ bokeh
 flask
 jinja2
 simplejson
+responses
