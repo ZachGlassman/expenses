@@ -1,73 +1,66 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify
 import os
-import pyrebase
-from services import Database, Authorization
+from flask_sqlalchemy import SQLAlchemy
+from flask_security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required
 from services.plotting import generate_type_plot
+from services.database import MongoDatabase
 from models import Transaction
 from datetime import datetime
-from functools import wraps
 
 app = Flask(__name__)
 
-app.secret_key = os.environ['secret_key']
 
-CONFIG_NAMES = ['apiKey', 'authDomain', 'databaseURL',
-                'storageBucket', 'storageBucket',
-                'messagingSenderId']
+app.config['SECRET_KEY'] = os.environ['secret_key']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SECURITY_PASSWORD_SALT'] = os.environ['SALT']
 
-firebase = pyrebase.initialize_app({key:os.environ[key] for key in CONFIG_NAMES})
 
-db = Database(firebase)
-auth = Authorization(firebase)
+db = MongoDatabase(os.environ["MONGODB_URI"])
 
-@app.context_processor
-def is_logged_in():
-    return dict(is_logged_in='username' in session)
+db_ = SQLAlchemy(app)
 
-def login_required(f):
-    @wraps(f)
-    def func(*args, **kwargs):
-        if not auth.is_logged_in():
-            try:
-                session.pop('username')
-            except KeyError:
-                pass
-            finally:
-                auth.user = None
-            return redirect(url_for('index', next=request.url))
-        return f(*args, **kwargs)
-    return func
+roles_users = db_.Table('roles_users',
+        db_.Column('user_id', db_.Integer(), db_.ForeignKey('user.id')),
+        db_.Column('role_id', db_.Integer(), db_.ForeignKey('role.id')))
+
+class Role(db_.Model, RoleMixin):
+    id = db_.Column(db_.Integer(), primary_key=True)
+    name = db_.Column(db_.String(80), unique=True)
+    description = db_.Column(db_.String(255))
+
+class User(db_.Model, UserMixin):
+    id = db_.Column(db_.Integer, primary_key=True)
+    email = db_.Column(db_.String(255), unique=True)
+    password = db_.Column(db_.String(255))
+    active = db_.Column(db_.Boolean())
+    confirmed_at = db_.Column(db_.DateTime())
+    roles = db_.relationship('Role', secondary=roles_users,
+                            backref=db_.backref('users', lazy='dynamic'))
+
+# Setup Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db_, User, Role)
+security = Security(app, user_datastore)
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_.session.remove()
 
 @app.route('/')
+@login_required
 def index():
     div = ''
     script = ''
-    if auth.is_logged_in():
-        tacts = db.get('transactions')
-        div, script = generate_type_plot([(i['type_'], i['cost']) for i in tacts])
+    tacts = db.get_collection('transactions')
+    div, script = generate_type_plot([(i['type_'], i['cost']) for i in tacts])
     return render_template('index.html', div=div, script=script)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        auth.log_in(username, password)
-        if auth.is_logged_in():
-            session['username'] = username
-    return redirect('/')
-
-@app.route('/logout', methods=['GET', 'POST'])
-def logout():
-    if request.method == 'POST':
-        session.pop('username')
-        auth.user = None
-    return render_template('index.html')
 
 @app.route('/types')
 @login_required
 def transaction_types():
-    tacts = db.get('transaction_types')
+    tacts = db.get_collection('transaction_types')
     return render_template('types.html', types=tacts)
 
 class Field(object):
@@ -133,7 +126,7 @@ def add_transaction():
     payload = Transaction(transaction_name)
     for field in fields:
         payload.add_property(field.name, field.type)
-    db.put('transaction_types', payload.to_json(), auth.get_auth())
+    db.put('transaction_types', payload.to_json())
     return redirect('/types')
 
 def _validate(d):
@@ -144,7 +137,7 @@ def _validate(d):
 @login_required
 def add():
     """add some sort of specific transactions"""
-    tacts = db.get('transaction_types')
+    tacts = db.get_collection('transaction_types')
     select = tacts[0]
     if request.method == 'POST':
         select = [t for t in tacts if t['name_'] == request.form['select']][0]
@@ -159,7 +152,7 @@ def add_final():
         payload = {k:v for k,v in request.form.items() if k != 'select'}
         flash(payload)
         payload['type_'] = request.form['select']
-        db.put('transactions', payload, auth.get_auth())
+        db.put('transactions', payload)
         return redirect('/transactions')
     else:
         return jsonify({})
@@ -167,7 +160,7 @@ def add_final():
 @app.route('/transactions')
 @login_required
 def transactions():
-    tacts = db.get('transactions')
+    tacts = db.get_collection('transactions')
     return render_template('transactions.html', tacts=tacts)
 
      

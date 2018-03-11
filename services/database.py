@@ -1,36 +1,19 @@
-import time
-from requests.exceptions import ConnectionError
-VALID_PATHS = ['transaction_types', 'transactions']
+import pymongo
+class MongoDatabase(object):
+    def __init__(self, url):
+        self.client = pymongo.MongoClient(url)
+        self.db = self.client.get_default_database()
 
-class Database(object):
-    """accessfirebase"""
-    def __init__(self, firebase):
-        self.db = firebase.database()
-        self._user = None
+    def get_collection(self, name, num=None):
+        """get a collection"""
+        result = []
+        for i, ele in enumerate(self.db[name].find()):
+            result.append(ele)
+            if num is not None:
+                if i > num:
+                    return result
 
-    @property
-    def user(self):
-        return self._user
+        return result
 
-    @user.setter
-    def user(self, value):
-        self._user = value 
-
-    def _validate(self):
-        return self._user is not None
-
-    def put(self, path, data, auth):
-        """put data in user folder in database"""
-        assert path in VALID_PATHS
-        return self.db.child(path).push(data, auth)
-
-    def get(self, path, type_=None):
-        if type_ is None:
-            items = self.db.child(path).get()
-        else:
-            items = self.db.child(path).order_by_child(type_).get()
-        try:
-            return [item.val() for item in items.each()]
-        except TypeError:
-            return []
-    
+    def put(collection, data):
+        self.db[collection].insert(data)

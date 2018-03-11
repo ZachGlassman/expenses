@@ -1,9 +1,11 @@
 gunicorn
 requests
-pyrebase
 pip
 bokeh
 flask
 jinja2
 simplejson
 responses
+pymongo
+flask-security
+flask-sqlalchemy

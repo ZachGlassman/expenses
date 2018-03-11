@@ -30,17 +30,6 @@
             </li>
           </ul>
         </div>
-      {% if not is_logged_in %}
-        <form class="form-inline my-2 my-lg-0" method="post" action="{{ url_for('login') }}">
-          <input class="form-control mr-sm-2" name="username" type="text" placeholder="Email" aria-label="Email">
-          <input class="form-control mr-sm-2" name="password" type="password" placeholder="Password" aria-label="Password">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
-        </form>
-      {% else %}
-        <form class="form-inline my-2 my-lg-0" method="post" action="{{ url_for('logout') }}">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
-        </form>
-      {% endif %}
     </nav>
     <br><br>
     <div class="container">
