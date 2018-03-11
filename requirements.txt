@@ -9,3 +9,4 @@ responses
 pymongo
 flask-security
 flask-sqlalchemy
+psycopg2
