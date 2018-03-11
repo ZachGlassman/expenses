@@ -52,7 +52,7 @@ def shutdown_session(exception=None):
 def index():
     div = ''
     script = ''
-    tacts = db.get_collection('transactions')
+    tacts = db.get_collection('transactions', sort_date=True)
     div, script = generate_type_plot([(i['type_'], i['cost']) for i in tacts])
     return render_template('index.html', div=div, script=script)
 
@@ -159,7 +159,7 @@ def add_final():
 @app.route('/transactions')
 @login_required
 def transactions():
-    tacts = db.get_collection('transactions')
+    tacts = db.get_collection('transactions', sort_date=True)
     return render_template('transactions.html', tacts=tacts)
 
      
