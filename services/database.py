@@ -15,5 +15,5 @@ class MongoDatabase(object):
 
         return result
 
-    def put(collection, data):
+    def put(self, collection, data):
         self.db[collection].insert(data)
