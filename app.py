@@ -150,7 +150,6 @@ def add():
 def add_final():
     if _validate(request.form):
         payload = {k:v for k,v in request.form.items() if k != 'select'}
-        flash(payload)
         payload['type_'] = request.form['select']
         db.put('transactions', payload)
         return redirect('/transactions')
