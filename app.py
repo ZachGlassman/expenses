@@ -143,7 +143,7 @@ def add():
         select = [t for t in tacts if t['name_'] == request.form['select']][0]
     return render_template('add.html', 
                            tacts=[t['name_'] for t in tacts], 
-                           selected=[k:v for k,v in select.items() if k != '_id')
+                           selected={k:v for k,v in select.items() if k != '_id'})
 
 @app.route('/add_final', methods=['POST'])
 @login_required
